@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+
+
+
+<head>
+
+  <meta charset="utf-8">
+
+
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <title>
+    Lampadaire Connecté / <%=id%>
+  </title>
+
+
+  <style>
+    html {font-family: sans-serif;
+      line-height: 1.15;
+      -webkit-text-size-adjust: 100%;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);}
+    body {background-color:#003355; position: absolute;
+      left: 10%;
+      right: 10%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.5;}
+    h1 {color: whitesmoke; 
+      text-align: center; 
+      margin-bottom: 2.0rem;
+      margin-top: 2.0rem;}
+  </style>
+
+</head>
+
+
+
+
+<body>
+
+
+
+  <h1 class="hyp_h1">Données du <%=id%></span></h1>
+  
+
+
+
+  <div id=soundBarGraph></div>
+
+  <div id=energyConsumptionBar></div>
+
+  <div id=lifeExpectancyGauge></div>
+
+
+
+  <script>
+    var soundValue = '<%=soundValue%>'.split(',').map(x => +x);//converts array of string in array of int
+    var energyConsumption = '<%=energyConsumption%>'.split(',').map(x => +x);
+    var bulbUsage = parseFloat('<%=bulbUsage%>');
+    var time = '<%=time%>'.split(',');
+    var id = '<%=id%>';
+
+    var dataSoundBar = {
+      type: 'bar',
+      name: 'niveau sonore en dB',
+      showlegend: true,
+      x: time,
+      y: soundValue,
+      text: soundValue.map(String),
+      hoverinfo: 'none',
+      textposition: 'auto',
+      marker: {
+        color: 'blue',
+        line: {
+          color: 'rgb(8,48,107)',
+          width: 1.5
+        }
+      },
+    };
+
+    var dataLifeGauge = {
+      domain: { x: [0, 1], y: [0, 1] },
+      value: bulbUsage,
+      type: 'indicator',
+      mode: 'gauge+number+delta',
+      delta: {
+        reference: 15000,
+      },
+      gauge: {
+        bordercolor: 'blue',
+        bgcolor: 'lightgray',
+        axis: {
+          range: [null, 15000],
+          tickmode: 'linear',
+          tick0: 0,
+          dtick: 1000,
+          ticks: 'inside',
+          ticklen: 3
+        },
+        bar: {
+          color: 'blue',
+        },
+        
+        steps: [{
+          range: [0, 1000],
+          color: 'gray',
+        }],
+      },
+    }
+
+    var dataEnergyConsumption = {
+      x: time,
+      y: energyConsumption,
+      type: 'bar',
+      name: "consommation d'énergie en kwh",
+      showlegend: true,
+      text: energyConsumption.map(String),
+      textposition: 'auto',
+      hoverinfo: 'none',
+      marker: {
+        color: 'blue',
+        line: {
+          color: 'rgb(8,48,107)',
+          width: 1.5
+        }
+      },
+    };
+
+    var layoutSoundBar = {
+      title: 'Evolution du niveau sonore autour du ' + id + ' au cours des 7 derniers jours',
+      yaxis: {
+        title: {
+          text: 'Niveau sonore en dB'
+        },
+        showline: true,
+        range: 'auto',
+        barmode: 'stack'
+      },
+    };
+
+    var layoutLifeGauge = {
+      title: {
+        text: "Durée de vie restante de l'ampoule du " + id,
+        margin: { t: 1, b: 0 }
+      },
+    }
+
+    var layoutEnergyConsumption = {
+      title: "Consommation d'energie du " + id + " au cours des 7 derniers jours",
+      yaxis: {
+        title: {
+          text: "Consommation d'energie en kwh",
+        },
+        showline: true,
+        range: 'auto',
+        barmode: 'stack'
+      },
+    };
+
+    Plotly.newPlot('soundBarGraph', [dataSoundBar], layoutSoundBar, { responsive: true });//sound value over the last seven days
+    Plotly.newPlot('lifeExpectancyGauge', [dataLifeGauge], layoutLifeGauge, { responsive: true });//life expectancy of the bulb
+    Plotly.newPlot('energyConsumptionBar', [dataEnergyConsumption], layoutEnergyConsumption, { responsive: true });//energy consumption of the light over the last seven days
+
+  </script>
+
+
+</body>
+
+
+
+</html>
